@@ -11,3 +11,9 @@ class NonLinearSimplePerceptron(Perceptron):
         return math.tanh(excited_state)
          
     def error(self,w):
+        error = 0
+        for i in range(len(self.training_set)):
+            excited_state = np.inner(self.training_set[i], w) # internal product: sum (e[i_x]*w_i) --> hiperplano
+            activation_state = self.activation(excited_state)
+            error += (self.expected_output[i] - activation_state)**2
+        return 0.5 * error

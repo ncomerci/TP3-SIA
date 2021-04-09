@@ -1,14 +1,3 @@
-# p is the size of the training set 
-# w is an array of synaptic weights
-# N is the dimension of the Input --> as we are working with points N=2
-# x is an array with the training_set (Input) It already has an E0=1 so we do not add w0
-# y is an array of expected outputs
-
-# Desconozco los pesos sinápticos que tiene que tener la neurona. Dsp de varias iteraciones voy a obtener el w que necesito. 
-# La salida de la neurona es el estado de activación. Pero yo quiero que la salida sea Z (expected_output)
-# Si la salidad de la neurona (O, activation_state) es distinta a lo que yo queria (Z) --> le aplico la correcion delta_w, sino la dejo como estaba, esa corrección depende de mi entrada (E)
-# El objetivo es que el perceptron converja a la solución.
-
 from perceptrons.perceptron import Perceptron
 import numpy as np
 
