@@ -1,0 +1,1 @@
+# simple_perceptron(identidad, error_function, learning_rate, training_set, expected_outputs):
