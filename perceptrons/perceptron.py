@@ -15,37 +15,39 @@ class Perceptron(ABC):
     def train(self, limit):
         i = 0
         n = 0
-        p = len(self.training_set[0]) - 1
+        p = len(self.training_set)
+        dimension = len(self.training_set[0])  
         # print("p:", p)
-        w = np.random.uniform(-1, 1, p+1) # array de longitud p+1 con valores random entre -1 y 1
+        w = np.random.uniform(-1, 1, dimension) # array de longitud p+1 con valores random entre -1 y 1  
         # print("w:", w)
         error = 1
         self.error_min = p*2
 
         while error > 0 and i < limit:
-            # print("-------------- gen %d --------------" % i)
-            if n >= 100 * p:
-                # Cada 200 iteraciones tenemos un cambio de w
-                w = np.random.uniform(-1, 1, p+1)
+            
+            if n >= 100 * p: # initialize weights again
+                w = np.random.uniform(-1, 1,dimension)  
                 n = 0
-            i_x = np.random.randint(0, p+2)
-            # print("i_x:", i_x)
+                
+            i_x = np.random.randint(0, p) # get a random point index from the training set  
+        
+            print("i_x:", i_x)
 
-            exitation = np.inner(self.training_set[i_x], w)
-            # print("exitation:", exitation)
-            activ = self.activation(exitation)
-            # print("activ:", activ)
+            excited_state = np.inner(self.training_set[i_x], w) # internal product: sum (e[i_x]*w_i) --> hiperplano
+            print("excited_state:", excited_state)
+            activation_state = self.activation(excited_state)
+            print("activation_state:", activation_state)
 
-            delta_w = (self.learning_rate * (self.expected_output[i_x] - activ)) * self.training_set[i_x]
-            # print("########### delta_w terminos ##########")
-            # print("learning_rate:", self.learning_rate, "expected_output[i_x] - activ:", self.expected_output[i_x] - activ, "training_set[i_x]:", self.training_set[i_x])
-            # print("delta_w:", delta_w)
+            delta_w = (self.learning_rate * (self.expected_output[i_x] - activation_state)) * self.training_set[i_x]
+            print("########### delta_w terminos ##########")
+            print("learning_rate:", self.learning_rate, "expected_output[i_x] - activation_state:", self.expected_output[i_x] - activation_state, "training_set[i_x]:", self.training_set[i_x])
+            print("delta_w:", delta_w)
 
             w += delta_w
-            # print("w_nuevo:", w)
+            print("w_nuevo:", w)
 
             error = self.error(w)
-            # print(error)
+            print(error)
 
             if error < self.error_min:
                 self.error_min = error
@@ -55,18 +57,18 @@ class Perceptron(ABC):
             n += 1
 
     # Funcion que recibe array de arrays y con el perceptron entrenado, 
-    # devuelve el valor de activacion esperado
+    # devuelve el valor de activation_stateacion esperado
     def get_output(self, input):
         print("MIN ERROR:", self.error_min)
         outputs = []
         aux_input = np.array(list(map(lambda t: [1]+t, input)))
         for i in range(len(aux_input)):
-            exitation = np.inner(aux_input[i], self.w_min)
-            outputs.append(self.activation(exitation))
+            excited_state = np.inner(aux_input[i], self.w_min)
+            outputs.append(self.activation(excited_state))
         return outputs
 
     @abstractmethod
-    def activation(self, exitation):
+    def activation(self, excited_state):
         pass
 
     # funcion que calcula el error en cada iteracion utilizando el conjunto de entrenamiento,
@@ -74,4 +76,9 @@ class Perceptron(ABC):
     @abstractmethod
     def error(self,w):
         pass
-    
+
+
+#      w0 e1 e2     
+#     [ 1 -1,1    1 1,-1    1 -1,-1    1 1,1  ]  training set (E)
+# and   -1         -1          -1         1      expected_outputs (Z) --> es lo que quiero aprender
+# xor    1          1          -1        -1

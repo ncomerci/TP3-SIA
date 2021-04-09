@@ -59,7 +59,7 @@ def simple_perceptron(activation_function, error_function, learning_rate, traini
     
     print(activation_state)
     
-   #       w0 e1 e2     
+   #      w0 e1 e2     
    #     [ 1 -1,1    1 1,-1    1 -1,-1    1 1,1  ]  training set (E)
    # and   -1         -1          -1         1      expected_outputs (Z) --> es lo que quiero aprender
    # xor    1          1          -1        -1
