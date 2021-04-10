@@ -18,4 +18,5 @@ class LinearSimplePerceptron(Perceptron):
         # return 0.5 * error
         return error
 
-        
+    def delta_w_correction(self,h):
+        return 1

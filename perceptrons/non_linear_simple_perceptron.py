@@ -15,7 +15,10 @@ class NonLinearSimplePerceptron(Perceptron):
         for i in range(len(self.training_set)):
             excited_state = np.inner(self.training_set[i], w) # internal product: sum (e[i_x]*w_i) --> hiperplano
             activation_state = self.activation(excited_state)
-            # error += (self.expected_output[i] - activation_state)**2
-            error += abs(self.expected_output[i] - activation_state)
-        # return 0.5 * error
-        return error
+            error += (self.expected_output[i] - activation_state)**2
+            #error += abs(self.expected_output[i] - activation_state)
+        return 0.5 * error
+        #return error
+        
+    def delta_w_correction(self,h):
+        return (1 - math.tanh(h)**2)

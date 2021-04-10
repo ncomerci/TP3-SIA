@@ -49,7 +49,8 @@ class Perceptron(ABC):
             activation_state = self.activation(excited_state)
             # print("activation_state:", activation_state)
 
-            delta_w = (self.learning_rate * (self.expected_output[i_x] - activation_state)) * self.training_set[i_x]
+            delta_w = (self.learning_rate * (self.expected_output[i_x] - activation_state)) * self.training_set[i_x] * self.delta_w_correction(excited_state)
+           
             # print("########### delta_w terminos ##########")
             # print("learning_rate:", self.learning_rate, "expected_output[i_x] - activation_state:", self.expected_output[i_x] - activation_state, "training_set[i_x]:", self.training_set[i_x])
             # print("delta_w:", delta_w)
@@ -87,7 +88,11 @@ class Perceptron(ABC):
     @abstractmethod
     def error(self,w):
         pass
-
+    
+    # en el perceptron no lineal hay que multiplicar delta_w * g'(h)
+    @abstractmethod
+    def delta_w_correction(self,h):
+        pass
 
 #      w0 e1 e2     
 #     [ 1 -1,1    1 1,-1    1 -1,-1    1 1,1  ]  training set (E)
