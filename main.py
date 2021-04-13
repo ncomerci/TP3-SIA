@@ -1,7 +1,13 @@
 from perceptrons.simple_perceptron import SimplePerceptron
 from perceptrons.linear_simple_perceptron import LinearSimplePerceptron
 from perceptrons.non_linear_simple_perceptron import NonLinearSimplePerceptron
+from normalize import normalize,normalize_training_set
 import csv, json
+import math
+
+import csv
+import itertools
+
 
 with open("config.json") as f:
     config = json.load(f)
@@ -16,21 +22,32 @@ perceptrons = {
 }
 perceptron = config["perceptron_type"]
 max_iterations = config["max_iterations"]
+training_amount = config["training_amount"]
+
+read_training_tsv = list(csv.reader(training_file, delimiter="\t"))
+read_training_tsv = list(map(lambda array: list(map(lambda x: float(x), array)), read_training_tsv))
+read_output_tsv = list(csv.reader(output_file, delimiter="\t"))
+read_output_tsv = list(map(lambda elem: float(elem[0]), read_output_tsv))
+total_input = len(read_training_tsv)
+limit = math.ceil(total_input * training_amount)
+
+training_set = read_training_tsv[:limit]
+generalize_set = read_training_tsv[limit:]
+
+learn_expected = read_output_tsv[:limit]
+generalize_expected = read_output_tsv[limit:]
 
 
-read_training_tsv = csv.reader(training_file, delimiter="\t")
-read_output_tsv = csv.reader(output_file, delimiter="\t")
+sp = perceptrons[perceptron]( training_set, learn_expected, learning_rate)
 
-training_set = []
-for row in read_training_tsv:
-    training_set.append(list(map(lambda x: float(x), row)))
+if perceptron == "non_linear_simple_perceptron": # As we are using tanh we need to normalize the dataset
     
-expected_output = []
-for row in read_output_tsv:
-    expected_output.append(list(map(lambda x: float(x), row)))
+    normalized_training_set = normalize_training_set(training_set)
+    normalized_expected = normalize(learn_expected) 
 
-sp = perceptrons[perceptron](training_set, expected_output, learning_rate)
+    sp = perceptrons[perceptron](normalized_training_set, normalized_expected, learning_rate)
 
 sp.train(max_iterations)
 
-print("ACTIVATION:", sp.get_output(training_set))
+out = sp.get_output(training_set) 
+print(out) 
