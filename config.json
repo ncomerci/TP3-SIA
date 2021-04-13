@@ -1,7 +1,9 @@
 {
-    "perceptron_type": "non_linear_simple_perceptron",
-    "learning_rate": 0.01,
+    "exercise": 1,
+    "perceptron_type": "linear_simple_perceptron",
+    "learning_rate": 0.03,
     "max_iterations": 10000,
+    "training_amount": 1,
     "training_tsv_path": "TSVs/training_set2.tsv",
     "output_tsv_path": "TSVs/expected_output2.tsv"
 }
