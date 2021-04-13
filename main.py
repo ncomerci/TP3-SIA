@@ -1,7 +1,7 @@
 from perceptrons.simple_perceptron import SimplePerceptron
 from perceptrons.linear_simple_perceptron import LinearSimplePerceptron
 from perceptrons.non_linear_simple_perceptron import NonLinearSimplePerceptron
-from normalize import normalize,normalize_training_set
+
 import csv, json
 import math
 
@@ -37,17 +37,9 @@ generalize_set = read_training_tsv[limit:]
 learn_expected = read_output_tsv[:limit]
 generalize_expected = read_output_tsv[limit:]
 
-
-sp = perceptrons[perceptron]( training_set, learn_expected, learning_rate)
-
-if perceptron == "non_linear_simple_perceptron": # As we are using tanh we need to normalize the dataset
-    
-    normalized_training_set = normalize_training_set(training_set)
-    normalized_expected = normalize(learn_expected) 
-
-    sp = perceptrons[perceptron](normalized_training_set, normalized_expected, learning_rate)
+sp = perceptrons[perceptron]( training_set, learn_expected, learning_rate) 
 
 sp.train(max_iterations)
+out = sp.get_output(training_set)
 
-out = sp.get_output(training_set) 
-print(out) 
+print(out)
