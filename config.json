@@ -1,6 +1,6 @@
 {
     "exercise": 1,
-    "perceptron_type": "linear_simple_perceptron",
+    "perceptron_type": "non_linear_simple_perceptron",
     "learning_rate": 0.03,
     "max_iterations": 10000,
     "training_amount": 1,
