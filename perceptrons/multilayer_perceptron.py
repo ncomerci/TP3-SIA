@@ -100,11 +100,13 @@ class MultilayerPerceptron:
     def backpropagate(self): 
      
         for layer in range(self.hidden_layers_amount,0,-1): # delta[layer][unit] voy desde M-1 hasta 2 
-            self.deltas[layer] = []
+            self.deltas[layer] = []     
             
-            for unit in range(self.hidden_layers[layer-1]):  
-                self.deltas[layer-1].append(deriv_activation_function( self.excited_state[layer-1][unit] )* np.inner(self.weights[layer][unit], self.deltas[layer][unit]))       # delta = g' * (expected - real ) se calcula el delta de la capa de salida
-                
+            for unit in range(self.hidden_layers[layer-1]):
+                self.deltas[layer].append(self.deriv_activation_function( self.excited_state[layer-1][unit] )* np.inner(self.weights[layer][unit], self.deltas[layer][unit]))       # delta = g' * (expected - real ) se calcula el delta de la capa de salida
+          
+        # calculate delta for layer 0 
+              
     def update_weigths(self): 
         
         for layer in range(self.hidden_layers_amount+1):
@@ -119,7 +121,7 @@ class MultilayerPerceptron:
         for i in range(len(self.training_set)):
             expected = self.expected_output[i]
             excited_state = np.inner(self.weights[self.hidden_layers_amount],self.activations[self.hidden_layers_amount])
-            activation_state = activation_function(excited_state)
+            activation_state = self.activation_function(excited_state)
             error += (expected - activation_state)**2
         return 0.5 * error
 
