@@ -73,6 +73,6 @@ if (perceptron == "multilayer_perceptron"):
 else: 
     sp = perceptrons[perceptron](training_set, learn_expected, learning_rate)
     
-sp.train(max_iterations)            # Train perceptron with a part of the dataset 
+sp.train()                          # Train perceptron with a part of the dataset 
 out = sp.get_output(training_set)   # Get real output based on the weights obtained in the training 
 print(out) 

@@ -2,6 +2,7 @@
 #  w[i][j] --> peso de la neurona i de la capa siguiente con el input j
 #  W[i][j] --> peso de la neurona i de la capa siguiente con el estado activación de la neurona de la capa anterior
 import numpy as np
+import math
 class MultilayerPerceptron: 
     
     LIMIT = 0.1
@@ -15,12 +16,10 @@ class MultilayerPerceptron:
         self.expected_output = expected_output
         self.learning_rate = learning_rate
         self.epochs_amount = epochs_amount
-        self.weights = { # weights that connect ei -- 1° hidden layer
-            0: np.random.rand(hidden_layers[0], len(training_set)) #filas x cols
-        }
         # Dictionary { key:layer value:list de activation states }
         
         # Estados de activacion de cada perceptron desde la capa 0 hasta la capa del output --> len = 1 + len(hidden_layers) + 1
+        self.weights = {}
         self.activations = {}
         self.excited_state = {}
         self.deltas = {} 
@@ -37,20 +36,22 @@ class MultilayerPerceptron:
         self.weights[self.hidden_layers_amount] = np.random.rand(1, self.hidden_layers[-1]) 
         
         
-    def train(self, max_iterations):
-         
+    def train(self):
+        error = float('inf') 
         for epoch in range(self.epochs_amount): 
-            error = 0
-            while error > self.LIMIT and iteration < max_iterations: 
+            
+            aux_training = self.training_set.copy()
+            while error > self.LIMIT and len(aux_training) > 0: 
                 
-                i_x = np.random.randint(0, len(training_set))                  # agarro un input random 
-                self.apply_input_to_layer_zero(training_set[i_x])              # V0_k = Eu_k
-                
+                i_x = np.random.randint(0, len(aux_training))                  # agarro un input random 
+                self.apply_input_to_layer_zero(aux_training[i_x])              # V0_k = Eu_k
+                np.delete(aux_training, i_x, axis=0)
+
                 self.propagate()                                               # propagate Vi = g(h) --> calculo las activaciones
                 
                 last_excited_state = self.excited_state[self.hidden_layers_amount][0]                           
                 last_activation_state = self.activations[self.hidden_layers_amount+1][0] # calculate deltas for backpropagate
-                self.deltas[self.hidden_layers_amount+1] = [deriv_activation_function(last_excited_state)*(self.expected_output[i_x] - last_activation_state)]       # delta = g' * (expected - real ) se calcula el delta de la capa de salida
+                self.deltas[self.hidden_layers_amount+1] = [self.deriv_activation_function(last_excited_state)*(self.expected_output[i_x] - last_activation_state)]       # delta = g' * (expected - real ) se calcula el delta de la capa de salida
                 
                 self.backpropagate()                                           # retropropagar
                 
@@ -98,7 +99,7 @@ class MultilayerPerceptron:
     # Hago el camino inverso para calcular los deltas
     def backpropagate(self): 
      
-        for layer in range(self.hidden_layers_amount+1,1,-1): # delta[layer][unit] voy desde M-1 hasta 2 
+        for layer in range(self.hidden_layers_amount,0,-1): # delta[layer][unit] voy desde M-1 hasta 2 
             self.deltas[layer] = []
             
             for unit in range(self.hidden_layers[layer]):  
@@ -122,7 +123,6 @@ class MultilayerPerceptron:
             error += (expected - activation_state)**2
         return 0.5 * error
 
-    # 
     def get_output(self, input):
         aux_input = np.array(list(map(lambda t: [1]+t, input)))
         output = []
