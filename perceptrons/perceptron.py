@@ -80,9 +80,8 @@ class Perceptron(ABC):
         pass
     
     # en el perceptron no lineal hay que multiplicar delta_w * g'(h)
-    @abstractmethod
     def delta_w_correction(self,h):
-        pass
+        return 1
 
 #      w0 e1 e2     
 #     [ 1 -1,1    1 1,-1    1 -1,-1    1 1,1  ]  training set (E)

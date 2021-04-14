@@ -1,8 +1,13 @@
 {
-    "perceptron_type": "linear_simple_perceptron",
+    "perceptron_type": "multilayer_perceptron",
     "learning_rate": 0.03,
     "max_iterations": 10000,
     "training_amount": 1,
-    "training_tsv_path": "TSVs/training_set2.tsv",
-    "output_tsv_path": "TSVs/expected_output2.tsv"
+    "multilayer_perceptron": {
+        "hidden_layers": [10], 
+        "epochs_amount": 10, 
+        "type": "lineal" 
+    },
+    "training_tsv_path": "TSVs/training_set1.tsv",
+    "output_tsv_path": "TSVs/xor_expected_output.tsv"
 }

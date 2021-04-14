@@ -21,5 +21,3 @@ class SimplePerceptron(Perceptron):
             error += abs(self.activation(excited_state) - self.expected_output[i])
         return error
     
-    def delta_w_correction(self,h):
-        return 1

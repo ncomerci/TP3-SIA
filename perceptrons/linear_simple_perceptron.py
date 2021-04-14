@@ -15,6 +15,3 @@ class LinearSimplePerceptron(Perceptron):
             activation_state = np.inner(self.training_set[i], w) # internal product: sum (e[i_x]*w_i) --> hiperplano
             error += (self.expected_output[i] - activation_state)**2
         return 0.5 * error
-
-    def delta_w_correction(self,h):
-        return 1
