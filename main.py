@@ -37,9 +37,40 @@ generalize_set = read_training_tsv[limit:]
 learn_expected = read_output_tsv[:limit]
 generalize_expected = read_output_tsv[limit:]
 
-sp = perceptrons[perceptron]( training_set, learn_expected, learning_rate) 
+# amount = 0.1 
+# while amount < 1:
+#     limit = math.ceil(total_input * amount)
+    
+#     training_set = read_training_tsv[:limit]
+#     generalize_set = read_training_tsv[limit:]
+#     learn_expected = read_output_tsv[:limit]
+#     generalize_expected = read_output_tsv[limit:]
 
-sp.train(max_iterations)
-out = sp.get_output(training_set)
+# #    print("============== TRAINING %f  ===============" %amount)
+#     e = []
+#     for j in range(3):
+#         sp = perceptrons[perceptron](training_set, learn_expected, learning_rate)
+#         sp.train(max_iterations)
+#         out = sp.get_output(generalize_set)
+#         error = 0
+#         for real_output, expected_output in zip(out, generalize_expected):  
+#             #print(f"OUTPUT: {real_output}, EXPECTED: {expected_output}, ERROR: {abs(real_output - expected_output)}")
+         
+#             error += abs(real_output - expected_output)
+            
+#             # QUE TAN BIEN APRENDE  --> esto es con train y pasandole en get_output todo el train 
+#             # QUE TAN BIEN GENERALIZA --> esto es con cte*train y  1-cte * generalized
 
+    
+#         e.append(error/len(out))
+
+#     print(sum(e)/len(e))
+    
+       
+#     amount += 0.05 
+    
+sp = perceptrons[perceptron](training_set, learn_expected, learning_rate)
+sp.train(max_iterations)            # Train perceptron with a part of the dataset 
+out = sp.get_output(training_set) # Get real output based on the weights obtained in the training 
 print(out)
+#                                     # Get error 
