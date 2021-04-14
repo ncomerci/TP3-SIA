@@ -22,17 +22,19 @@ class MultilayerPerceptron:
         
         # Estados de activacion de cada perceptron desde la capa 0 hasta la capa del output --> len = 1 + len(hidden_layers) + 1
         self.activations = {}
-
-        # Estados de activacion de cada perceptron desde la primera capa oculta hasta la capa del output --> len = len(hidden_layers) + 1
         self.excited_state = {}
+        self.deltas = {} 
+        
+        # Initialize weights
+        # connect layer0 to hidden layer 1 
+        self.weights[0] = np.random.rand(self.hidden_layers[0], len(self.training_set[0]))
+        
+        # connect hidden_layer i con i+1
         for layer_i in range(self.hidden_layers_amount - 1): #initialize hidden layers weights
-            self.weights[layer_i+1] = np.random.rand(hidden_layers[layer_i+1], hidden_layers[layer_i])
+            self.weights[layer_i+1] = np.random.rand(self.hidden_layers[layer_i+1], self.hidden_layers[layer_i])
         
-        self.weights[self.hidden_layers_amount] = np.random.rand(1, hidden_layers[-1]) # connect last hidden layer with the output
-        
-        # Deltas de cada perceptron desde la primera capa oculta hasta la capa del output --> len = len(hidden_layers) + 1
-        self.deltas = {}
-        # self.weights[0] --> [[1,2,3, 4],[1,2,3, 4]]
+        # connect last hidden layer with the output
+        self.weights[self.hidden_layers_amount] = np.random.rand(1, self.hidden_layers[-1]) 
         
         
     def train(self, max_iterations):
@@ -67,7 +69,7 @@ class MultilayerPerceptron:
         self.activations[self.hidden_layers_amount+1] = []
         self.excited_state[self.hidden_layers_amount] = []
         
-        for layer in range(self.hidden_layers_amount - 1): #V[m][i] = activations[layer][unit]
+        for layer in range(self.hidden_layers_amount): #V[m][i] = activations[layer][unit]
             self.activations[layer+1] = []
             self.excited_state[layer] = []
 
@@ -80,7 +82,7 @@ class MultilayerPerceptron:
                 self.excited_state[layer].append(excited_state)
                 self.activations[layer+1].append(self.activation_function(excited_state))
 
-        # Activation del ouput:
+        # Activation del output:
         excited_state = np.inner(self.weights[self.hidden_layers_amount][0], self.activations[self.hidden_layers_amount])   #con esto se calcula el delta      
     
         self.excited_state[self.hidden_layers_amount].append(excited_state)
@@ -119,6 +121,20 @@ class MultilayerPerceptron:
             activation_state = activation_function(excited_state)
             error += (expected - activation_state)**2
         return 0.5 * error
+
+    # 
+    def get_output(self, input):
+        aux_input = np.array(list(map(lambda t: [1]+t, input)))
+        output = []
+
+        for elem in aux_input:
+            print(elem)
+            self.apply_input_to_layer_zero(elem)
+            self.propagate()
+            output.append(self.activations[self.hidden_layers_amount+1])
+
+        return output
+
         
         
     # capa0     capa1         c2          c3      c4 --> M=4 (no cuenta la cero)   
