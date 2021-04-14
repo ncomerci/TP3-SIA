@@ -102,7 +102,7 @@ class MultilayerPerceptron:
         for layer in range(self.hidden_layers_amount,0,-1): # delta[layer][unit] voy desde M-1 hasta 2 
             self.deltas[layer] = []
             
-            for unit in range(self.hidden_layers[layer]):  
+            for unit in range(self.hidden_layers[layer-1]):  
                 self.deltas[layer-1].append(deriv_activation_function( self.excited_state[layer-1][unit] )* np.inner(self.weights[layer][unit], self.deltas[layer][unit]))       # delta = g' * (expected - real ) se calcula el delta de la capa de salida
                 
     def update_weigths(self): 
