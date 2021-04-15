@@ -20,9 +20,10 @@ class MultilayerPerceptron:
         
         # Estados de activacion de cada perceptron desde la capa 0 hasta la capa del output --> len = 1 + len(hidden_layers) + 1
         self.weights = {}
-        self.activations = {}
-        self.excited_state = {}
-        self.deltas = {} 
+        self.activations = {} 
+        self.excited_state = {} # Estados de exitacion de cada perceptron desde la primera capa oculta hasta la capa del output --> len = len(hidden_layers) + 1
+        self.deltas = {} # Deltas de cada perceptron desde la primera capa oculta hasta la capa del output --> len = len(hidden_layers) + 1
+       
         
         # Initialize weights
         # connect layer0 to hidden layer 1 
@@ -51,7 +52,7 @@ class MultilayerPerceptron:
                 
                 last_excited_state = self.excited_state[self.hidden_layers_amount][0]                           
                 last_activation_state = self.activations[self.hidden_layers_amount+1][0] # calculate deltas for backpropagate
-                self.deltas[self.hidden_layers_amount+1] = [self.deriv_activation_function(last_excited_state)*(self.expected_output[i_x] - last_activation_state)]       # delta = g' * (expected - real ) se calcula el delta de la capa de salida
+                self.deltas[self.hidden_layers_amount] = [self.deriv_activation_function(last_excited_state)*(self.expected_output[i_x] - last_activation_state)]       # delta = g' * (expected - real ) se calcula el delta de la capa de salida
                 
                 self.backpropagate()                                           # retropropagar
                 
@@ -98,29 +99,29 @@ class MultilayerPerceptron:
 
     # Hago el camino inverso para calcular los deltas
     def backpropagate(self): 
-     
-        # self.deltas[0] = 
 
-        for layer in range(self.hidden_layers_amount,0,-1): # delta[layer][unit] voy desde M-1 hasta 2 
-            self.deltas[layer] = []     
-            
-            for unit in range(self.hidden_layers[layer-1]):
-                deriv = self.deriv_activation_function( self.excited_state[layer-1][unit])
-                inner = np.inner(self.weights[layer][unit], self.deltas[layer][unit])
+        #   Para calcular el delta de un nodo, necesitamos hacer la sumatoria de los weights que salen hacia un nodo * el delta de dicho nodo
+        for layer in range(self.hidden_layers_amount - 1,-1,-1): # delta[layer][unit] voy desde M-1 hasta 2     e0 -- w --- V0
+            self.deltas[layer] = []
+            prev_deltas =  self.deltas[layer+1]
+            for unit in range(self.hidden_layers[layer]):
+                deriv = self.deriv_activation_function( self.excited_state[layer][unit])
+                w = self.weights[layer+1][:,unit]
+                inner = np.inner(w, prev_deltas)  
                 self.deltas[layer].append(deriv * inner)       # delta = g' * (expected - real ) se calcula el delta de la capa de salida
-          
-        # calculate delta for layer 0 
+     
               
     def update_weigths(self): 
-        
+        layers = [len(self.training_set[0])] + self.hidden_layers
         for layer in range(self.hidden_layers_amount+1):
-            for unit in range(self.hidden_layers[layer]):
-                
-                delta_w = self.learning_rate *  self.deltas[layer][unit] * self.activations[layer][unit] #deltas arranca de la capa1, activations desde la capa 0 
-                self.weights[layer][unit] += delta_w
+            next_deltas = np.array(self.deltas[layer])
+            for unit in range(layers[layer]):
+                aux = self.learning_rate *  next_deltas
+                delta_w = aux * self.activations[layer][unit] #deltas arranca de la capa1, activations desde la capa 0 
+                self.weights[layer][:,unit] += delta_w
     
         
-    def calculate_error(): 
+    def calculate_error(self): 
         error = 0
         for i in range(len(self.training_set)):
             expected = self.expected_output[i]
