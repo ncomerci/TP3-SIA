@@ -45,7 +45,7 @@ class MultilayerPerceptron:
                 
                 i_x = np.random.randint(0, len(aux_training))                  # agarro un input random 
                 self.apply_input_to_layer_zero(aux_training[i_x])              # V0_k = Eu_k
-                np.delete(aux_training, i_x, axis=0)
+                aux_training = np.delete(aux_training, i_x, axis=0)
 
                 self.propagate()                                               # propagate Vi = g(h) --> calculo las activaciones
                 
@@ -99,11 +99,15 @@ class MultilayerPerceptron:
     # Hago el camino inverso para calcular los deltas
     def backpropagate(self): 
      
+        # self.deltas[0] = 
+
         for layer in range(self.hidden_layers_amount,0,-1): # delta[layer][unit] voy desde M-1 hasta 2 
             self.deltas[layer] = []     
             
             for unit in range(self.hidden_layers[layer-1]):
-                self.deltas[layer].append(self.deriv_activation_function( self.excited_state[layer-1][unit] )* np.inner(self.weights[layer][unit], self.deltas[layer][unit]))       # delta = g' * (expected - real ) se calcula el delta de la capa de salida
+                deriv = self.deriv_activation_function( self.excited_state[layer-1][unit])
+                inner = np.inner(self.weights[layer][unit], self.deltas[layer][unit])
+                self.deltas[layer].append(deriv * inner)       # delta = g' * (expected - real ) se calcula el delta de la capa de salida
           
         # calculate delta for layer 0 
               
