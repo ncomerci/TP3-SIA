@@ -8,14 +8,13 @@ class MultilayerPerceptron:
     LIMIT = 0.1
     
     #hidden_layers is an array of len layers_amount and values: units per layer -->  [units of first layer, units of second layer] 
-    def __init__(self, training_set, expected_output, learning_rate, hidden_layers, epochs_amount):
+    def __init__(self, training_set, expected_output, learning_rate, hidden_layers):
         
         self.training_set = np.array(list(map(lambda t: [1]+t, training_set)))   # add e0 = 1
         self.hidden_layers = list(map(lambda units: units+1, hidden_layers))     # add one unit to each layer --> v0
         self.hidden_layers_amount = len(hidden_layers)
         self.expected_output = expected_output
         self.learning_rate = learning_rate
-        self.epochs_amount = epochs_amount
         # Dictionary { key:layer value:list de activation states }
         
         # Estados de activacion de cada perceptron desde la capa 0 hasta la capa del output --> len = 1 + len(hidden_layers) + 1
@@ -37,9 +36,9 @@ class MultilayerPerceptron:
         self.weights[self.hidden_layers_amount] = np.random.rand(1, self.hidden_layers[-1]) 
         
         
-    def train(self):
+    def train(self, epochs_amount):
         error = float('inf') 
-        for epoch in range(self.epochs_amount): 
+        for epoch in range(epochs_amount): 
             
             aux_training = self.training_set.copy()
             while error > self.LIMIT and len(aux_training) > 0: 
