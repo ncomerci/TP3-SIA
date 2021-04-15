@@ -128,7 +128,7 @@ class MultilayerPerceptron:
             excited_state = np.inner(self.weights[self.hidden_layers_amount],self.activations[self.hidden_layers_amount])
             activation_state = self.activation_function(excited_state)
             error += (expected - activation_state)**2
-        return 0.5 * error
+        return 0.5 * error[0]
 
     def get_output(self, input):
         aux_input = np.array(list(map(lambda t: [1]+t, input)))
