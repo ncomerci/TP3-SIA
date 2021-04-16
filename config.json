@@ -1,11 +1,11 @@
 {
     "perceptron_type": "multilayer_perceptron",
-    "learning_rate": 0.03,
+    "learning_rate": 0.05,
     "max_iterations": 10000,
     "training_amount": 1,
     "multilayer_perceptron": {
-        "hidden_layers": [5], 
-        "epochs_amount": 100
+        "hidden_layers": [10], 
+        "epochs_amount": 5000
     },
     "training_tsv_path": "TSVs/training_set1.tsv",
     "output_tsv_path": "TSVs/xor_expected_output.tsv"
