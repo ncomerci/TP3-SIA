@@ -7,6 +7,6 @@
         "hidden_layers": [10], 
         "epochs_amount": 5000
     },
-    "training_tsv_path": "TSVs/training_set1.tsv",
-    "output_tsv_path": "TSVs/xor_expected_output.tsv"
+    "training_file_path": "files/ej1_training_set.txt",
+    "output_file_path": "files/xor_expected_output.txt"
 }
