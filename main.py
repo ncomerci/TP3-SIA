@@ -9,12 +9,23 @@ import math
 import csv
 import itertools
 
+def import_and_parse_data(file):
+    datafile = open(file, 'r')
+    datareader = csv.reader(datafile, delimiter=' ')
+    data = []
+    for row in datareader:
+        clean_row = [float(a) for a in row if a != '']
+        if len(clean_row) == 1:
+            data.append(clean_row[0]) 
+        else:
+            data.append(clean_row)   
+    return data
 
 with open("config.json") as f:
     config = json.load(f)
 
-training_file = open(config["training_tsv_path"])
-output_file = open(config["output_tsv_path"])
+training_file = config["training_file_path"]
+output_file = config["output_file_path"]
 learning_rate = config["learning_rate"]
 perceptrons = {
     "step_simple_perceptron": SimplePerceptron,
@@ -28,18 +39,18 @@ training_amount = config["training_amount"]
 hidden_layers = config["multilayer_perceptron"]["hidden_layers"]
 epochs_amount = config["multilayer_perceptron"]["epochs_amount"]
 
-read_training_tsv = list(csv.reader(training_file, delimiter="\t"))
-read_training_tsv = list(map(lambda array: list(map(lambda x: float(x), array)), read_training_tsv))
-read_output_tsv = list(csv.reader(output_file, delimiter="\t"))
-read_output_tsv = list(map(lambda elem: float(elem[0]), read_output_tsv))
-total_input = len(read_training_tsv)
+read_training_txt = import_and_parse_data(training_file)
+read_output_txt = import_and_parse_data(output_file)
+print(read_training_txt)
+print(read_output_txt)
+total_input = len(read_training_txt)
 limit = math.ceil(total_input * training_amount)
 
-training_set = read_training_tsv[:limit]
-generalize_set = read_training_tsv[limit:]
+training_set = read_training_txt[:limit]
+generalize_set = read_training_txt[limit:]
 
-learn_expected = read_output_tsv[:limit]
-generalize_expected = read_output_tsv[limit:]
+learn_expected = read_output_txt[:limit]
+generalize_expected = read_output_txt[limit:]
 
 # amount = 0.1 
 # while amount < 1:
@@ -69,10 +80,10 @@ generalize_expected = read_output_tsv[limit:]
 #     amount += 0.05 
 
 if (perceptron == "multilayer_perceptron"): 
-    sp = MultilayerPerceptron(training_set, learn_expected, learning_rate, hidden_layers, epochs_amount)
+    sp = MultilayerPerceptron(training_set, learn_expected, learning_rate, hidden_layers)
 else: 
     sp = perceptrons[perceptron](training_set, learn_expected, learning_rate)
     
-sp.train()                          # Train perceptron with a part of the dataset 
+sp.train(epochs_amount)                          # Train perceptron with a part of the dataset 
 out = sp.get_output(training_set)   # Get real output based on the weights obtained in the training 
 print(out) 
