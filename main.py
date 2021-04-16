@@ -1,7 +1,7 @@
 from perceptrons.simple_perceptron import SimplePerceptron
 from perceptrons.linear_simple_perceptron import LinearSimplePerceptron
 from perceptrons.non_linear_simple_perceptron import NonLinearSimplePerceptron
-from perceptrons.multilayer_perceptron import MultilayerPerceptron
+from perceptrons.multilayer_v2 import MultilayerPerceptron
 
 import csv, json
 import math

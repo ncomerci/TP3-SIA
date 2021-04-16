@@ -4,7 +4,7 @@
     "max_iterations": 10000,
     "training_amount": 1,
     "multilayer_perceptron": {
-        "hidden_layers": [10], 
+        "hidden_layers": [10, 5],
         "epochs_amount": 5000
     },
     "training_file_path": "files/ej1_training_set.txt",
