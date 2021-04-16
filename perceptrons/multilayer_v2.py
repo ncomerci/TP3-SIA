@@ -1,6 +1,6 @@
 import numpy as np
 import math
-
+import json
 class Neuron:
 
     def __init__(self, weights, activation_f):
@@ -10,13 +10,13 @@ class Neuron:
         self.last_excited = 0
         self.last_activation = 0
 
-    def adjustment(self, input, learning_rate):
+    def adjustment(self, prev_layer_activations, learning_rate):
         adjustment = learning_rate * self.last_delta
-        delta_w = adjustment * np.array(input)
+        delta_w = adjustment * np.array(prev_layer_activations)
         self.weights += delta_w
 
-    def get_activation(self, input):
-        excited_state = np.inner(input, self.weights)
+    def get_activation(self, prev_layer_activations):
+        excited_state = np.inner(prev_layer_activations, self.weights)
         self.last_excited = excited_state
         self.last_activation = self.activation_f(excited_state)
         return self.last_activation
@@ -43,10 +43,11 @@ class MultilayerPerceptron:
             for i in range(self.layers[layer_i]):
                 # El nodo umbral tienen siempre activacion 1 y no tiene pesos entrantes
                 if i == 0 and layer_i != self.layers_amount-1:
-                    self.neurons[layer_i].append(Neuron(None,self.activation_function))
+                    self.neurons[layer_i].append(Neuron(None,self.activation_function)) # Neurona umbral no tiene pesos entrantes
                     self.neurons[layer_i][i].last_activation = 1
                 else:
-                    w = np.random.rand(self.layers[layer_i-1])
+                    w = np.random.uniform(size= (self.layers[layer_i-1]), low=-1, high=1)
+                    # w = np.random.rand(self.layers[layer_i-1])
                     self.neurons[layer_i].append(Neuron(w,self.activation_function)) 
         
     def activation_function(self, excited_state):
@@ -57,6 +58,7 @@ class MultilayerPerceptron:
 
     def train(self, epochs_amount):
         error = float('inf') 
+        errors = []
         for epoch in range(epochs_amount):
             aux_training = self.training_set.copy() 
             while error > self.LIMIT and len(aux_training) > 0: 
@@ -76,11 +78,12 @@ class MultilayerPerceptron:
                 self.update_weigths()                                          # a cada neurona le actualizo el peso
 
                 error = self.calculate_error() 
+                errors.append(error)
 
 
 
     # Cuando ya agarré el input, le asigno cada componente a el estado de activación de cada unidad de la capa cero 
-    def apply_input_to_layer_zero(self, input): # input = [0 1 1 1 0]
+    def apply_input_to_layer_zero(self, input): # input = [1 1 1 1 0]
         for i in range(len(input)):
             self.neurons[0][i].last_activation = input[i]
     
@@ -109,7 +112,7 @@ class MultilayerPerceptron:
         for layer_i in range(self.layers_amount - 1,1,-1): # delta[layer][unit] voy desde M-1 hasta 2     e0 -- w --- V0
             neurons = self.neurons[layer_i-1]
             upper_level_neurons = self.neurons[layer_i]
-            # Si estoy en una capa oculta, saco el nodo umbral
+            # Si las neuronas del nivel superior estan en una capa oculta, saco el nodo umbral
             if layer_i != self.layers_amount - 1:
                 upper_level_neurons = self.neurons[layer_i][1:]
             upper_deltas = [n.last_delta for n in upper_level_neurons]
@@ -141,6 +144,7 @@ class MultilayerPerceptron:
                 aggregate += self.neurons[self.layers_amount-1][j].last_excited
                 # excited_state = np.inner(self.weights[self.hidden_layers_amount],self.activations[self.hidden_layers_amount])
             activation_state = self.activation_function(aggregate)
+            # print(expected - activation_state)
             error += (expected - activation_state)**2
         return 0.5 * error
 
