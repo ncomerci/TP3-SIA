@@ -69,10 +69,10 @@ generalize_expected = read_output_tsv[limit:]
 #     amount += 0.05 
 
 if (perceptron == "multilayer_perceptron"): 
-    sp = MultilayerPerceptron(training_set, learn_expected, learning_rate, hidden_layers, epochs_amount)
+    sp = MultilayerPerceptron(training_set, learn_expected, learning_rate, hidden_layers)
 else: 
     sp = perceptrons[perceptron](training_set, learn_expected, learning_rate)
     
-sp.train()                          # Train perceptron with a part of the dataset 
+sp.train(epochs_amount)                          # Train perceptron with a part of the dataset 
 out = sp.get_output(training_set)   # Get real output based on the weights obtained in the training 
 print(out) 

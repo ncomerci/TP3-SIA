@@ -26,14 +26,14 @@ class MultilayerPerceptron:
         
         # Initialize weights
         # connect layer0 to hidden layer 1 
-        self.weights[0] = np.random.rand(self.hidden_layers[0], len(self.training_set[0]))
+        self.weights[0] = np.random.uniform(size= (self.hidden_layers[0], len(self.training_set[0])),  low=-1, high=1)
         
         # connect hidden_layer i con i+1
         for layer_i in range(self.hidden_layers_amount - 1): #initialize hidden layers weights
-            self.weights[layer_i+1] = np.random.rand(self.hidden_layers[layer_i+1], self.hidden_layers[layer_i])
+            self.weights[layer_i+1] = np.random.uniform(size=(self.hidden_layers[layer_i+1], self.hidden_layers[layer_i]),  low=-1, high=1 )
         
         # connect last hidden layer with the output
-        self.weights[self.hidden_layers_amount] = np.random.rand(1, self.hidden_layers[-1]) 
+        self.weights[self.hidden_layers_amount] = np.random.uniform(size=(1, self.hidden_layers[-1]), low=-1, high=1) 
         
         
     def train(self, epochs_amount):
@@ -58,11 +58,14 @@ class MultilayerPerceptron:
                 self.update_weigths()                                          # a cada neurona le actualizo el peso
                 
                 error = self.calculate_error() 
-            
+                #print(error)
+            #print("sale del while")
     
     # Cuando ya agarré el input, le asigno cada componente a el estado de activación de cada unidad de la capa cero 
     def apply_input_to_layer_zero(self, input): # input = [0 1 1 1 0]
+        print(input)
         self.activations[0] = input.copy()
+        print(self.activations)
    
     # Calculo el estado de activación para todas las neuronas de la red para el input que agarré
     def propagate(self): 
@@ -126,9 +129,11 @@ class MultilayerPerceptron:
             expected = self.expected_output[i]
             excited_state = np.inner(self.weights[self.hidden_layers_amount],self.activations[self.hidden_layers_amount])
             activation_state = self.activation_function(excited_state)
+            
             error += (expected - activation_state)**2
-        return 0.5 * error[0]
-
+           
+        return (0.5 * error[0])/len(self.training_set)
+    
     def get_output(self, input):
         aux_input = np.array(list(map(lambda t: [1]+t, input)))
         output = []
