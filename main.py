@@ -9,16 +9,22 @@ import math
 import csv
 import itertools
 
-def import_and_parse_data(file):
+def import_and_parse_data(file, rows_per_entry):
     datafile = open(file, 'r')
     datareader = csv.reader(datafile, delimiter=' ')
     data = []
+    row_count = 0
+    entry = []
     for row in datareader:
-        clean_row = [float(a) for a in row if a != '']
-        if len(clean_row) == 1:
-            data.append(clean_row[0]) 
+        if row_count < rows_per_entry:
+            entry += [float(a) for a in row if a != '']
         else:
-            data.append(clean_row)   
+            row_count = 0
+            if len(entry) == 1:
+                data.append(entry[0]) 
+            else:
+                data.append(entry) 
+            entry = []
     return data
 
 with open("config.json") as f:
@@ -41,9 +47,10 @@ epochs_amount = config["multilayer_perceptron"]["epochs_amount"]
 adaptive_eta = config["multilayer_perceptron"]["adaptive_eta"]
 batch = config["multilayer_perceptron"]["batch"]
 momentum = config["multilayer_perceptron"]["momentum"]
+rows_per_entry = config["training_file_lines_per_entry"]
 
-read_training_txt = import_and_parse_data(training_file)
-read_output_txt = import_and_parse_data(output_file)
+read_training_txt = import_and_parse_data(training_file, rows_per_entry)
+read_output_txt = import_and_parse_data(output_file, 1)
 print(read_training_txt)
 print(read_output_txt)
 total_input = len(read_training_txt)

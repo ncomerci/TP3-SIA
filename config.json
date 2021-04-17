@@ -11,5 +11,6 @@
         "momentum": false
     },
     "training_file_path": "files/ej1_training_set.txt",
+    "training_file_lines_per_entry": 1,
     "output_file_path": "files/xor_expected_output.txt"
 }
