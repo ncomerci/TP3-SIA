@@ -61,17 +61,19 @@ class MultilayerPerceptron:
         errors = []
         for epoch in range(epochs_amount):
             aux_training = self.training_set.copy() 
+            aux_expected = self.expected_output.copy()
             while error > self.LIMIT and len(aux_training) > 0: 
                 i_x = np.random.randint(0, len(aux_training))                  # agarro un input random 
+                expected = aux_expected[i_x]
                 self.apply_input_to_layer_zero(aux_training[i_x])              # V0_k = Eu_k
                 aux_training = np.delete(aux_training, i_x, axis=0)
-                
+                aux_expected = np.delete(aux_expected, i_x, axis=0)
                 self.propagate()
 
                 # Calcular delta para neuronas den la ultima capa
                 last_layer_neurons = self.neurons[self.layers_amount - 1]
                 for i in range(self.layers[-1]):
-                    last_layer_neurons[i].last_delta = self.deriv_activation_function(last_layer_neurons[i].last_excited)*(self.expected_output[i_x] - last_layer_neurons[i].last_activation)
+                    last_layer_neurons[i].last_delta = self.deriv_activation_function(last_layer_neurons[i].last_excited)*(expected - last_layer_neurons[i].last_activation)
                 
                 self.backpropagate()                                           # retropropagar 
 

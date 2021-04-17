@@ -1,12 +1,12 @@
 {
     "perceptron_type": "multilayer_perceptron",
-    "learning_rate": 0.05,
+    "learning_rate": 0.01,
     "max_iterations": 10000,
     "training_amount": 1,
     "multilayer_perceptron": {
-        "hidden_layers": [10, 5],
+        "hidden_layers": [3],
         "epochs_amount": 5000
     },
     "training_file_path": "files/ej1_training_set.txt",
-    "output_file_path": "files/xor_expected_output.txt"
+    "output_file_path": "files/and_expected_output.txt"
 }
