@@ -25,10 +25,13 @@ class MultilayerPerceptron:
     
     LIMIT = 0.1
     
-    def __init__(self, training_set, expected_output, learning_rate, hidden_layers):
+    def __init__(self, training_set, expected_output, learning_rate, hidden_layers, adaptive_eta, batch, momentum):
         
         self.training_set = np.array(list(map(lambda t: [1]+t, training_set)))   # add e0 = 1
         self.expected_output = expected_output
+        self.adaptive_eta = adaptive_eta
+        self.batch = batch
+        self.momentum = momentum
         #TODO deshardcodear el len del expected output que esta en 1, el problema es que lo pasamos a array en vez de array de arrays entonces len(expected_output[0]) da error
         self.layers = [len(self.training_set[0])] + list(map(lambda units: units+1, hidden_layers)) + [1]     # add one unit to each layer --> v0
         self.layers_amount = len(self.layers)

@@ -38,6 +38,9 @@ max_iterations = config["max_iterations"]
 training_amount = config["training_amount"]
 hidden_layers = config["multilayer_perceptron"]["hidden_layers"]
 epochs_amount = config["multilayer_perceptron"]["epochs_amount"]
+adaptive_eta = config["multilayer_perceptron"]["adaptive_eta"]
+batch = config["multilayer_perceptron"]["batch"]
+momentum = config["multilayer_perceptron"]["momentum"]
 
 read_training_txt = import_and_parse_data(training_file)
 read_output_txt = import_and_parse_data(output_file)
@@ -80,7 +83,7 @@ generalize_expected = read_output_txt[limit:]
 #     amount += 0.05 
 
 if (perceptron == "multilayer_perceptron"): 
-    sp = MultilayerPerceptron(training_set, learn_expected, learning_rate, hidden_layers)
+    sp = MultilayerPerceptron(training_set, learn_expected, learning_rate, hidden_layers, adaptive_eta, batch, momentum)
 else: 
     sp = perceptrons[perceptron](training_set, learn_expected, learning_rate)
     

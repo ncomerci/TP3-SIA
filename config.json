@@ -5,8 +5,11 @@
     "training_amount": 1,
     "multilayer_perceptron": {
         "hidden_layers": [3],
-        "epochs_amount": 5000
+        "epochs_amount": 5000,
+        "batch": true,
+        "adaptive_eta": false,
+        "momentum": false
     },
     "training_file_path": "files/ej1_training_set.txt",
-    "output_file_path": "files/and_expected_output.txt"
+    "output_file_path": "files/xor_expected_output.txt"
 }
