@@ -9,12 +9,19 @@ class Neuron:
         self.last_delta = 0
         self.last_excited = 0
         self.last_activation = 0
+        self.batch_delta_w = [0 for i in len(weights)]
 
     def adjustment(self, prev_layer_activations, learning_rate):
         adjustment = learning_rate * self.last_delta
         delta_w = adjustment * np.array(prev_layer_activations)
         self.weights += delta_w
-
+        
+    def get_batch_delta_w(self, prev_layer_activations, learning_rate):
+        return learning_rate * self.last_delta * np.array(prev_layer_activations)
+    
+    def batch_adjustment(self, accum_delta_w): 
+        self.weights += accum_delta_w 
+        
     def get_activation(self, prev_layer_activations):
         excited_state = np.inner(prev_layer_activations, self.weights)
         self.last_excited = excited_state
@@ -24,7 +31,7 @@ class Neuron:
 class MultilayerPerceptron:
     
     LIMIT = 0.1
-    
+    # si es batch tengo un array de deltas accum según el input que elegí. Cuando termina la época los actualizo 
     def __init__(self, training_set, expected_output, learning_rate, hidden_layers, adaptive_eta, batch, momentum):
         
         self.training_set = np.array(list(map(lambda t: [1]+t, training_set)))   # add e0 = 1
@@ -66,25 +73,35 @@ class MultilayerPerceptron:
             aux_training = self.training_set.copy() 
             aux_expected = self.expected_output.copy()
             while error > self.LIMIT and len(aux_training) > 0: 
-                i_x = np.random.randint(0, len(aux_training))                  # agarro un input random 
+                i_x = np.random.randint(0, len(aux_training))               # get random input
                 expected = aux_expected[i_x]
-                self.apply_input_to_layer_zero(aux_training[i_x])              # V0_k = Eu_k
+                
+                self.apply_input_to_layer_zero(aux_training[i_x])           # V0_k = Eu_k
+                
                 aux_training = np.delete(aux_training, i_x, axis=0)
                 aux_expected = np.delete(aux_expected, i_x, axis=0)
-                self.propagate()
+                
+                self.propagate()                                            # propagate activations
 
-                # Calcular delta para neuronas den la ultima capa
-                last_layer_neurons = self.neurons[self.layers_amount - 1]
+                last_layer_neurons = self.neurons[self.layers_amount - 1]   # calculate output layer delta
                 for i in range(self.layers[-1]):
                     last_layer_neurons[i].last_delta = self.deriv_activation_function(last_layer_neurons[i].last_excited)*(expected - last_layer_neurons[i].last_activation)
                 
-                self.backpropagate()                                           # retropropagar 
+                self.backpropagate()                                        # backpropagate delta 
 
-                self.update_weigths()                                          # a cada neurona le actualizo el peso
+                if(self.batch):
+                    self.accum_delta_w += get_input_accum_deltas()
+                else: 
+                    self.update_weigths()                                   # incremental: update each neuron weights every iteration
 
-                error = self.calculate_error() 
+                error = self.calculate_error()                              # calculate error
                 errors.append(error)
 
+                # updatewighs de batch 
+                weights input + delta accum 
+            [input1: w1, i2 w2, ]
+            #aca termina una época --> si es batch tengo que actualizar los pesos 
+        
 
 
     # Cuando ya agarré el input, le asigno cada componente a el estado de activación de cada unidad de la capa cero 
@@ -129,14 +146,13 @@ class MultilayerPerceptron:
                 neurons[unit].last_delta = deriv * inner   # delta = g' * (expected - real) se calcula el delta de la capa de salida
 
     def update_weigths(self): 
-        for layer_i in range(1,self.layers_amount):
-            # next_deltas = np.array(self.deltas[layer])
+        for layer_i in range(1,self.layers_amount): 
             neurons = self.neurons[layer_i]
             prev_layer_neurons = self.neurons[layer_i-1]
             pln_activations = np.array(list(map(lambda n: n.last_activation, prev_layer_neurons)))
-            for unit in range(self.layers[layer_i]):
-                # Las neuronas umbral no tiene pesos
-                if not (unit == 0 and layer_i != self.layers_amount-1): 
+            
+            for unit in range(self.layers[layer_i]):    
+                if not (unit == 0 and layer_i != self.layers_amount-1): # Las neuronas umbral no tienen pesos
                     neurons[unit].adjustment(pln_activations,self.learning_rate)
 
 
@@ -149,7 +165,7 @@ class MultilayerPerceptron:
                 aggregate += self.neurons[self.layers_amount-1][j].last_excited
                 # excited_state = np.inner(self.weights[self.hidden_layers_amount],self.activations[self.hidden_layers_amount])
             activation_state = self.activation_function(aggregate)
-            # print(expected - activation_state)
+            
             error += (expected - activation_state)**2
         return 0.5 * error
 
