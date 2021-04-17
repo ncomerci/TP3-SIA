@@ -9,7 +9,7 @@ class Neuron:
         self.last_delta = 0
         self.last_excited = 0
         self.last_activation = 0
-        self.batch_delta_w = [0 for i in len(weights)]
+        # self.batch_delta_w = [0 for i in len(weights)]
 
     def adjustment(self, prev_layer_activations, learning_rate):
         adjustment = learning_rate * self.last_delta
@@ -98,8 +98,8 @@ class MultilayerPerceptron:
                 errors.append(error)
 
                 # updatewighs de batch 
-                weights input + delta accum 
-            [input1: w1, i2 w2, ]
+            #     weights input + delta accum 
+            # [input1: w1, i2 w2, ]
             #aca termina una época --> si es batch tengo que actualizar los pesos 
         
 

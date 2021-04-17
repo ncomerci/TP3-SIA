@@ -24,7 +24,14 @@ def import_and_parse_data(file, rows_per_entry):
                 data.append(entry[0]) 
             else:
                 data.append(entry) 
-            entry = []
+            entry = [float(a) for a in row if a != '']
+        row_count += 1
+
+    if len(entry) == 1:
+        data.append(entry[0]) 
+    else:
+        data.append(entry) 
+
     return data
 
 with open("config.json") as f:
@@ -51,8 +58,8 @@ rows_per_entry = config["training_file_lines_per_entry"]
 
 read_training_txt = import_and_parse_data(training_file, rows_per_entry)
 read_output_txt = import_and_parse_data(output_file, 1)
-print(read_training_txt)
-print(read_output_txt)
+# print(read_training_txt)
+# print(read_output_txt)
 total_input = len(read_training_txt)
 limit = math.ceil(total_input * training_amount)
 
