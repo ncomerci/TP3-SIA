@@ -9,8 +9,9 @@ class Neuron:
         self.last_delta = 0
         self.last_excited = 0
         self.last_activation = 0
+        if(self.weights is not None):
+            self.batch_delta_w = [0]*len(weights) 
         self.last_delta_w = 0
-        # self.batch_delta_w = [0 for i in len(weights)]
 
     def adjustment(self, prev_layer_activations, learning_rate, momentum):
         adjustment = learning_rate * self.last_delta
@@ -20,11 +21,18 @@ class Neuron:
         self.weights += delta_w
         self.last_delta_w = delta_w
         
-    def get_batch_delta_w(self, prev_layer_activations, learning_rate):
-        return learning_rate * self.last_delta * np.array(prev_layer_activations)
+    def get_batch_delta_w(self, prev_layer_activations, learning_rate, momentum):
+        delta_w = learning_rate * self.last_delta * np.array(prev_layer_activations)
+        if(momentum):
+            delta_w += 0.8 * self.last_delta_w
+        self.last_delta_w = delta_w
+        return delta_w
     
-    def batch_adjustment(self, accum_delta_w): 
-        self.weights += accum_delta_w 
+    def batch_adjustment(self): 
+       
+        self.weights += self.batch_delta_w
+        self.batch_delta_w = [0] * len(self.weights)
+ 
         
     def get_activation(self, prev_layer_activations):
         excited_state = np.inner(prev_layer_activations, self.weights)
@@ -64,6 +72,7 @@ class MultilayerPerceptron:
                     # w = np.random.rand(self.layers[layer_i-1])
                     self.neurons[layer_i].append(Neuron(w,self.activation_function)) 
         
+        
     def activation_function(self, excited_state):
         return np.tanh(excited_state)
 
@@ -94,16 +103,17 @@ class MultilayerPerceptron:
                 self.backpropagate()                                        # backpropagate delta 
 
                 if(self.batch):
-                    self.accum_delta_w += get_input_accum_deltas()
+                    self.accumulate_input_deltas() # batch: accumulate delta_w until epoch is finished
                 else: 
                     self.update_weigths()                                   # incremental: update each neuron weights every iteration
 
                 error = self.calculate_error()                              # calculate error
                 errors.append(error)
-
-                # updatewighs de batch 
-            #     weights input + delta accum 
-            # [input1: w1, i2 w2, ]
+  
+            if(self.batch): # new epoch --> update weights 
+                self.batch_update_weights()
+                    
+                    
             #aca termina una época --> si es batch tengo que actualizar los pesos 
         
 
@@ -158,8 +168,27 @@ class MultilayerPerceptron:
             for unit in range(self.layers[layer_i]):    
                 if not (unit == 0 and layer_i != self.layers_amount-1): # Las neuronas umbral no tienen pesos
                     neurons[unit].adjustment(pln_activations,self.learning_rate, self.momentum)
-
-
+                    
+    def batch_update_weights(self): 
+        for layer_i in range(1,self.layers_amount):
+            for i in range(self.layers[layer_i]):
+                # No propago en la neurona umbral
+                if not (i == 0 and layer_i != self.layers_amount-1):
+                    self.neurons[layer_i][i].batch_adjustment()
+                                       
+    # Devuelve un array con todos los deltas_w de ese input y se lo tiene que sumar al array de accum_deltas                     
+    def accumulate_input_deltas(self): 
+        for layer_i in range(1,self.layers_amount): 
+            neurons = self.neurons[layer_i]
+            prev_layer_neurons = self.neurons[layer_i-1]
+            pln_activations = np.array(list(map(lambda n: n.last_activation, prev_layer_neurons)))
+            
+            for unit in range(self.layers[layer_i]):    
+                if not (unit == 0 and layer_i != self.layers_amount-1):
+                    
+                   delta_w = neurons[unit].get_batch_delta_w(pln_activations, self.learning_rate, self.momentum) # calculo TODOS los delta_w de la neurona     
+                   neurons[unit].batch_delta_w += delta_w 
+        
     def calculate_error(self): 
         error = 0
         for i in range(len(self.training_set)):
