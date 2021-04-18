@@ -44,11 +44,14 @@ class MultilayerPerceptron:
     
     LIMIT = 0.1
     # si es batch tengo un array de deltas accum según el input que elegí. Cuando termina la época los actualizo 
-    def __init__(self, training_set, expected_output, learning_rate, hidden_layers, adaptive_eta, batch, momentum):
+    def __init__(self, training_set, expected_output, learning_rate, hidden_layers, adaptive_eta_params, batch, momentum):
         
         self.training_set = np.array(list(map(lambda t: [1]+t, training_set)))   # add e0 = 1
         self.expected_output = expected_output
-        self.adaptive_eta = adaptive_eta
+        self.adaptive_eta = adaptive_eta_params[0]
+        self.adaptive_eta_increase = adaptive_eta_params[1]
+        self.adaptive_eta_decrease = adaptive_eta_params[2]
+        self.adaptive_eta_max_iterations = adaptive_eta_params[3]
         self.batch = batch
         self.momentum = momentum
         #TODO deshardcodear el len del expected output que esta en 1, el problema es que lo pasamos a array en vez de array de arrays entonces len(expected_output[0]) da error
@@ -80,11 +83,17 @@ class MultilayerPerceptron:
         return (1 - math.tanh(h)**2)
 
     def train(self, epochs_amount):
-        error = float('inf') 
-        errors = []
+        error = float('inf')
+        aux_learning_rate = self.learning_rate
+
         for epoch in range(epochs_amount):
             aux_training = self.training_set.copy() 
             aux_expected = self.expected_output.copy()
+            k = 0
+            last_error = None
+            if(self.adaptive_eta):
+                self.learning_rate = aux_learning_rate
+          
             while error > self.LIMIT and len(aux_training) > 0: 
                 i_x = np.random.randint(0, len(aux_training))               # get random input
                 expected = aux_expected[i_x]
@@ -108,16 +117,16 @@ class MultilayerPerceptron:
                     self.update_weigths()                                   # incremental: update each neuron weights every iteration
 
                 error = self.calculate_error()                              # calculate error
-                errors.append(error)
-  
+
+                # Compare errors for adaptive eta
+                if last_error and self.adaptive_eta:
+                    k = self.apply_adaptive_eta(error, last_error,k)
+                last_error = error
+       
             if(self.batch): # new epoch --> update weights 
                 self.batch_update_weights()
-                    
-                    
-            #aca termina una época --> si es batch tengo que actualizar los pesos 
-        
-
-
+     
+     
     # Cuando ya agarré el input, le asigno cada componente a el estado de activación de cada unidad de la capa cero 
     def apply_input_to_layer_zero(self, input): # input = [1 1 1 1 0]
         for i in range(len(input)):
@@ -139,7 +148,6 @@ class MultilayerPerceptron:
                     neurons[i].get_activation(pln_activations)
                     
     
-
     # Hago el camino inverso para calcular los deltas
     def backpropagate(self): 
 
@@ -202,7 +210,27 @@ class MultilayerPerceptron:
             error += (expected - activation_state)**2
         return 0.5 * error
 
+    def apply_adaptive_eta(self, error, last_error, k):
 
+        if ( error < last_error):
+            if k > 0:
+                k = 0 
+            k-=1                    
+        elif error > last_error:
+            if k < 0:
+                k = 0
+            k += 1
+        else:
+            k = 0 
+            
+        if k == -self.adaptive_eta_max_iterations : # decreció k veces seguidas --> aumento eta 
+            self.learning_rate += self.adaptive_eta_increase
+    
+        elif k == self.adaptive_eta_max_iterations: # creció k veces seguidas --> diminuyo eta 
+            self.learning_rate -= self.adaptive_eta_decrease*self.learning_rate
+      
+        return k 
+        
     def get_output(self, input):
         aux_input = np.array(list(map(lambda t: [1]+t, input)))
         output = []

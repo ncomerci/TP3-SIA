@@ -51,7 +51,10 @@ max_iterations = config["max_iterations"]
 training_amount = config["training_amount"]
 hidden_layers = config["multilayer_perceptron"]["hidden_layers"]
 epochs_amount = config["multilayer_perceptron"]["epochs_amount"]
-adaptive_eta = config["multilayer_perceptron"]["adaptive_eta"]
+adaptive_eta = config["multilayer_perceptron"]["adaptive_eta"]["use"]
+adaptive_eta_increase = config["multilayer_perceptron"]["adaptive_eta"]["increase_by"]
+adaptive_eta_decrease = config["multilayer_perceptron"]["adaptive_eta"]["decrease_by"]
+adaptive_eta_max_iterations = config["multilayer_perceptron"]["adaptive_eta"]["max_iterations"]
 batch = config["multilayer_perceptron"]["batch"]
 momentum = config["multilayer_perceptron"]["momentum"]
 rows_per_entry = config["training_file_lines_per_entry"]
@@ -97,7 +100,8 @@ generalize_expected = read_output_txt[limit:]
 #     amount += 0.05 
 
 if (perceptron == "multilayer_perceptron"): 
-    sp = MultilayerPerceptron(training_set, learn_expected, learning_rate, hidden_layers, adaptive_eta, batch, momentum)
+    adaptive_eta_params = [adaptive_eta, adaptive_eta_increase, adaptive_eta_decrease, adaptive_eta_max_iterations]
+    sp = MultilayerPerceptron(training_set, learn_expected, learning_rate, hidden_layers, adaptive_eta_params, batch, momentum)
 else: 
     sp = perceptrons[perceptron](training_set, learn_expected, learning_rate)
     

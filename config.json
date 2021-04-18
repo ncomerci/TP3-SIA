@@ -7,7 +7,12 @@
         "hidden_layers": [10],
         "epochs_amount": 5000,
         "batch": true,
-        "adaptive_eta": false,
+        "adaptive_eta": {
+            "use": true,
+            "increase_by": 0.01,
+            "decrease_by": 0.02,
+            "max_iterations": 10
+        },
         "momentum": true
     },
     "training_file_path": "files/ej1_training_set.txt",
