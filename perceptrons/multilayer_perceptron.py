@@ -9,12 +9,16 @@ class Neuron:
         self.last_delta = 0
         self.last_excited = 0
         self.last_activation = 0
+        self.last_delta_w = 0
         # self.batch_delta_w = [0 for i in len(weights)]
 
-    def adjustment(self, prev_layer_activations, learning_rate):
+    def adjustment(self, prev_layer_activations, learning_rate, momentum):
         adjustment = learning_rate * self.last_delta
         delta_w = adjustment * np.array(prev_layer_activations)
+        if(momentum):
+            delta_w += 0.8 * self.last_delta_w
         self.weights += delta_w
+        self.last_delta_w = delta_w
         
     def get_batch_delta_w(self, prev_layer_activations, learning_rate):
         return learning_rate * self.last_delta * np.array(prev_layer_activations)
@@ -153,7 +157,7 @@ class MultilayerPerceptron:
             
             for unit in range(self.layers[layer_i]):    
                 if not (unit == 0 and layer_i != self.layers_amount-1): # Las neuronas umbral no tienen pesos
-                    neurons[unit].adjustment(pln_activations,self.learning_rate)
+                    neurons[unit].adjustment(pln_activations,self.learning_rate, self.momentum)
 
 
     def calculate_error(self): 
