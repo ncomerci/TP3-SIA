@@ -4,18 +4,18 @@
     "max_iterations": 10000,
     "training_amount": 1,
     "multilayer_perceptron": {
-        "hidden_layers": [10],
+        "hidden_layers": [10,10],
         "epochs_amount": 5000,
-        "batch": true,
+        "batch": false,
+        "momentum": false,
         "adaptive_eta": {
-            "use": true,
+            "use": false,
             "increase_by": 0.01,
-            "decrease_by": 0.02,
-            "max_iterations": 10
-        },
-        "momentum": true
+            "decrease_by": 0.03,
+            "max_iterations": 4
+        }        
     },
-    "training_file_path": "files/ej1_training_set.txt",
-    "training_file_lines_per_entry": 1,
-    "output_file_path": "files/xor_expected_output.txt"
+    "training_file_path": "files/ej3_mapa_de_pixeles.txt",
+    "training_file_lines_per_entry": 7,
+    "output_file_path": "files/ej3_mapa_output.txt"
 }

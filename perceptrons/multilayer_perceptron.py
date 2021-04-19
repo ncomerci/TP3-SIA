@@ -42,7 +42,7 @@ class Neuron:
 
 class MultilayerPerceptron:
     
-    LIMIT = 0.1
+    LIMIT = 0.001
     # si es batch tengo un array de deltas accum según el input que elegí. Cuando termina la época los actualizo 
     def __init__(self, training_set, expected_output, learning_rate, hidden_layers, adaptive_eta_params, batch, momentum):
         
@@ -72,7 +72,7 @@ class MultilayerPerceptron:
                     self.neurons[layer_i][i].last_activation = 1
                 else:
                     w = np.random.uniform(size= (self.layers[layer_i-1]), low=-1, high=1)
-                    # w = np.random.rand(self.layers[layer_i-1])
+                    
                     self.neurons[layer_i].append(Neuron(w,self.activation_function)) 
         
         
@@ -83,21 +83,21 @@ class MultilayerPerceptron:
         return (1 - math.tanh(h)**2)
 
     def train(self, epochs_amount):
-        error = float('inf')
+        min_error = float('inf')
         aux_learning_rate = self.learning_rate
 
         for epoch in range(epochs_amount):
             aux_training = self.training_set.copy() 
             aux_expected = self.expected_output.copy()
             k = 0
+            acum_error = 0
             last_error = None
             if(self.adaptive_eta):
                 self.learning_rate = aux_learning_rate
-          
-            while error > self.LIMIT and len(aux_training) > 0: 
+            
+            while len(aux_training) > 0: 
                 i_x = np.random.randint(0, len(aux_training))               # get random input
                 expected = aux_expected[i_x]
-                
                 self.apply_input_to_layer_zero(aux_training[i_x])           # V0_k = Eu_k
                 
                 aux_training = np.delete(aux_training, i_x, axis=0)
@@ -112,19 +112,32 @@ class MultilayerPerceptron:
                 self.backpropagate()                                        # backpropagate delta 
 
                 if(self.batch):
-                    self.accumulate_input_deltas() # batch: accumulate delta_w until epoch is finished
+                    self.accumulate_input_deltas()                          # batch: accumulate delta_w until epoch is finished
                 else: 
                     self.update_weigths()                                   # incremental: update each neuron weights every iteration
 
-                error = self.calculate_error()                              # calculate error
+                aux_error = self.calculate_error(expected)
+                acum_error += aux_error                              # calculate error\
 
+                # print("error: " + str(error))
                 # Compare errors for adaptive eta
-                if last_error and self.adaptive_eta:
-                    k = self.apply_adaptive_eta(error, last_error,k)
-                last_error = error
-       
+                if self.adaptive_eta and last_error:
+                    k = self.apply_adaptive_eta(aux_error, last_error,k)
+                last_error = aux_error
+            error = 0.5 * acum_error/len(self.training_set)
+            # print(error)
+            # print(error)
+            if error < min_error:
+                min_error = error 
+            # print("min error: " + str(min_error) )    
+            # print("avg error: " + str(error))
+            if(error < self.LIMIT):
+                print(f"FINAL EPOCH: {epoch} - FINAL ERROR: {error} - FINAL MIN ERROR: {min_error}")
+                break
             if(self.batch): # new epoch --> update weights 
                 self.batch_update_weights()
+        print(f"ALL EPOCHS DONE - FINAL ERROR: {error} - FINAL MIN ERROR: {min_error}")
+            
      
      
     # Cuando ya agarré el input, le asigno cada componente a el estado de activación de cada unidad de la capa cero 
@@ -197,18 +210,23 @@ class MultilayerPerceptron:
                    delta_w = neurons[unit].get_batch_delta_w(pln_activations, self.learning_rate, self.momentum) # calculo TODOS los delta_w de la neurona     
                    neurons[unit].batch_delta_w += delta_w 
         
-    def calculate_error(self): 
+    def calculate_error(self,expected):
+        # for i in range(len(self.training_set)):
+        #     expected = self.expected_output[i]
+        activation = self.neurons[self.layers_amount-1][0].last_activation
+        error = (expected - activation)**2
+        return error
+
+    def calculate_error_2(self): 
         error = 0
         for i in range(len(self.training_set)):
             expected = self.expected_output[i]
-            aggregate = 0
-            for j in range(self.layers[-1]):
-                aggregate += self.neurons[self.layers_amount-1][j].last_excited
-                # excited_state = np.inner(self.weights[self.hidden_layers_amount],self.activations[self.hidden_layers_amount])
-            activation_state = self.activation_function(aggregate)
-            
-            error += (expected - activation_state)**2
-        return 0.5 * error
+            exited = self.neurons[self.layers_amount-1][0].last_excited
+            activation_state = self.activation_function(exited)
+            print(expected)
+            print(activation_state)
+            error += 0.5 * (1 + expected)*math.log((1+expected)/(1+activation_state),10) + 0.5 * (1-expected)*math.log((1-expected)/(1-activation_state),10)
+        return error
 
     def apply_adaptive_eta(self, error, last_error, k):
 
@@ -222,7 +240,6 @@ class MultilayerPerceptron:
             k += 1
         else:
             k = 0 
-            
         if k == -self.adaptive_eta_max_iterations : # decreció k veces seguidas --> aumento eta 
             self.learning_rate += self.adaptive_eta_increase
     
