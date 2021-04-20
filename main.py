@@ -102,9 +102,11 @@ generalize_expected = read_output_txt[limit:]
 if (perceptron == "multilayer_perceptron"): 
     adaptive_eta_params = [adaptive_eta, adaptive_eta_increase, adaptive_eta_decrease, adaptive_eta_max_iterations]
     sp = MultilayerPerceptron(training_set, learn_expected, learning_rate, hidden_layers, adaptive_eta_params, batch, momentum)
+    amount = epochs_amount
 else: 
     sp = perceptrons[perceptron](training_set, learn_expected, learning_rate)
+    amount = max_iterations
     
-sp.train(epochs_amount)             # Train perceptron with a part of the dataset 
+sp.train(amount)             # Train perceptron with a part of the dataset 
 out = sp.get_output(generalize_set if generalize_set else training_set)   # Get real output based on the weights obtained in the training 
 print(out) 
