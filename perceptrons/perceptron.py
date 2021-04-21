@@ -13,6 +13,7 @@ from abc import ABC, abstractmethod
 import math
 import random
 import numpy as np
+from scipy.optimize import minimize_scalar
 
 class Perceptron(ABC):
 
@@ -50,6 +51,8 @@ class Perceptron(ABC):
             w += delta_w 
             
             error = self.error(w)
+            
+            #self.optimize_learning_rate(w, activation_state, excited_state, i_x)
 
             if error < self.error_min:
                 self.error_min = error
@@ -69,6 +72,26 @@ class Perceptron(ABC):
             outputs.append(self.activation(excited_state))
         return outputs
 
+        
+    def optimize_learning_rate(self, w, activation_state, excited_state, i_x): 
+        ans = minimize_scalar(
+            self.calculate_error, 
+            bounds=(0,0.1), # search a local min between 0 and 1
+            args=( w, activation_state, excited_state, i_x), 
+            method = 'bounded', 
+            options= { 'maxiter': 100} 
+        )
+        
+        if ans.success: 
+            print("Optimized eta")
+            print(ans.x)
+    
+    
+    def calculate_error(self,alpha,w, activation_state, excited_state, i_x): 
+        delta_w = (alpha * (self.expected_output[i_x] - activation_state)) * self.training_set[i_x] * self.delta_w_correction(excited_state)
+        w += delta_w 
+        return self.error(w)
+    
     @abstractmethod
     def activation(self, excited_state):
         pass
