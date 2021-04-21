@@ -107,6 +107,6 @@ else:
     sp = perceptrons[perceptron](training_set, learn_expected, learning_rate)
     amount = max_iterations
     
-sp.train(amount)             # Train perceptron with a part of the dataset 
-out = sp.get_output(generalize_set if generalize_set else training_set)   # Get real output based on the weights obtained in the training 
+sp.train(amount)                                                            # Train perceptron with a part of the dataset 
+out = sp.get_output(generalize_set if generalize_set else training_set)     # Get real output based on the weights obtained in the training 
 print(out) 
