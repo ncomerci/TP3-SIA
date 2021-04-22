@@ -2,6 +2,8 @@ from perceptrons.simple_perceptron import SimplePerceptron
 from perceptrons.linear_simple_perceptron import LinearSimplePerceptron
 from perceptrons.non_linear_simple_perceptron import NonLinearSimplePerceptron
 from perceptrons.multilayer_perceptron import MultilayerPerceptron
+from metrics import Metrics
+from constants import * 
 
 import csv, json
 import math
@@ -106,7 +108,8 @@ if (perceptron == "multilayer_perceptron"):
 else: 
     sp = perceptrons[perceptron](training_set, learn_expected, learning_rate)
     amount = max_iterations
-    
-sp.train(amount)                                                            # Train perceptron with a part of the dataset 
-out = sp.get_output(generalize_set if generalize_set else training_set)     # Get real output based on the weights obtained in the training 
-print(out) 
+ 
+Metrics.cross_validation(10, read_training_txt , read_output_txt, learning_rate, amount, NON_LINEAR_SP)     
+#sp.train(amount)                                                            # Train perceptron with a part of the dataset 
+#out = sp.get_output(generalize_set if generalize_set else training_set)     # Get real output based on the weights obtained in the training 
+#print(out) 

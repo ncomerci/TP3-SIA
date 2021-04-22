@@ -16,6 +16,7 @@ class Normalization:
         return self.normalize(self.expected_output, self.max_val_expected, self.min_val_expected)
 
     def normalize(self,dataset,max, min): 
+        
         return list(map(lambda elem: 2*(elem - min)/(max - min) - 1, dataset)) 
 
     def input_normalized(self,input):
