@@ -44,7 +44,7 @@ class MultilayerPerceptron:
     
     LIMIT = 0.001
     # si es batch tengo un array de deltas accum según el input que elegí. Cuando termina la época los actualizo 
-    def __init__(self, training_set, expected_output, learning_rate, hidden_layers, adaptive_eta_params, batch, momentum):
+    def __init__(self, training_set, expected_output, learning_rate, hidden_layers, adaptive_eta_params, batch = False, momentum = False):
         
         self.training_set = np.array(list(map(lambda t: [1]+t, training_set)))   # add e0 = 1
         self.expected_output = expected_output
