@@ -13,6 +13,7 @@ from abc import ABC, abstractmethod
 import math
 import random
 import numpy as np
+from scipy.optimize import minimize_scalar
 
 class Perceptron(ABC):
 
@@ -27,10 +28,9 @@ class Perceptron(ABC):
         i = 0
         n = 0
         p = len(self.training_set)
-        dimension = len(self.training_set[0])  
-        # # print("p:", p)
+        dimension = len(self.training_set[0])   
         w = np.random.uniform(-1, 1, dimension) # array de longitud p+1 con valores random entre -1 y 1  
-        # print("w:", w)
+    
         error = 1
         # self.error_min = p*2
         self.error_min = float('inf')
@@ -41,25 +41,18 @@ class Perceptron(ABC):
                 n = 0
                 
             i_x = np.random.randint(0, p) # get a random point index from the training set  
-        
-            # print("i_x:", i_x)
-
+         
             excited_state = np.inner(self.training_set[i_x], w) # internal product: sum (e[i_x]*w_i) --> hiperplano
-            # print("excited_state:", excited_state)
-            activation_state = self.activation(excited_state)
-            # print("activation_state:", activation_state)
-
+ 
+            activation_state = self.activation(excited_state) 
+ 
             delta_w = (self.learning_rate * (self.expected_output[i_x] - activation_state)) * self.training_set[i_x] * self.delta_w_correction(excited_state)
-           
-            # print("########### delta_w terminos ##########")
-            # print("learning_rate:", self.learning_rate, "expected_output[i_x] - activation_state:", self.expected_output[i_x] - activation_state, "training_set[i_x]:", self.training_set[i_x])
-            # print("delta_w:", delta_w)
 
-            w += delta_w
-            # print("w_nuevo:", w)
-
+            w += delta_w 
+            
             error = self.error(w)
-            # print(error)
+            
+            #self.optimize_learning_rate(w, activation_state, excited_state, i_x)
 
             if error < self.error_min:
                 self.error_min = error
@@ -79,6 +72,26 @@ class Perceptron(ABC):
             outputs.append(self.activation(excited_state))
         return outputs
 
+        
+    def optimize_learning_rate(self, w, activation_state, excited_state, i_x): 
+        ans = minimize_scalar(
+            self.calculate_error, 
+            bounds=(0,0.1), # search a local min between 0 and 1
+            args=( w, activation_state, excited_state, i_x), 
+            method = 'bounded', 
+            options= { 'maxiter': 100} 
+        )
+        
+        if ans.success: 
+            print("Optimized eta")
+            print(ans.x)
+    
+    
+    def calculate_error(self,alpha,w, activation_state, excited_state, i_x): 
+        delta_w = (alpha * (self.expected_output[i_x] - activation_state)) * self.training_set[i_x] * self.delta_w_correction(excited_state)
+        w += delta_w 
+        return self.error(w)
+    
     @abstractmethod
     def activation(self, excited_state):
         pass
@@ -90,9 +103,8 @@ class Perceptron(ABC):
         pass
     
     # en el perceptron no lineal hay que multiplicar delta_w * g'(h)
-    @abstractmethod
     def delta_w_correction(self,h):
-        pass
+        return 1
 
 #      w0 e1 e2     
 #     [ 1 -1,1    1 1,-1    1 -1,-1    1 1,1  ]  training set (E)
