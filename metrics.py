@@ -51,7 +51,7 @@ class Metrics:
         all_indexes = list(range(len(data_set)))
         random.shuffle(all_indexes)
         splitted_indexes = np.array_split(np.array(all_indexes), k_fold)
-        print()
+ 
         #  | test  |        |   |   |   | 
         #  |       | test   |   |   |   | 
 
@@ -67,7 +67,6 @@ class Metrics:
         neuron = None
         for indexes in splitted_indexes: 
             compl_indexes = set(all_indexes) - set(indexes.tolist())
-            print(compl_indexes)
             
             testing_set = [data_set[i] for i in indexes]
             test_expected_output = [expected_output[i] for i in indexes]
@@ -83,15 +82,14 @@ class Metrics:
             real_output = sp.get_output(testing_set) 
             
             confusion_matrix = self.calculate_confusion_matrix([1, -1], real_output, test_expected_output)
-            print(confusion_matrix)
+             
             metric = self.accuracy(confusion_matrix) 
             
             if(metric < best_metric): 
                 best_metric = metric 
                 neuron = sp
                 best_indexes = indexes
-        print(best_metric)
-        print(best_indexes)
+       
         return neuron, best_metric, best_indexes
     
     # Confusion matrix --> en las columnas los valores predecidos y en las filas el real
@@ -109,9 +107,9 @@ class Metrics:
         # xor         1     -1 
         #  1          2     0
         # -1          0     2
-        print(real_output)
+       
         values = [elem[0] for elem in real_output]
-        print(expected_output)
+        
         bias = 0.1
         matrix = [[0,0], [0,0]]
         for i in range(len(real_output)): 

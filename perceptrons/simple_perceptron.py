@@ -16,8 +16,8 @@ class SimplePerceptron(Perceptron):
         error = 0
         for i in range(training_size):
             excited_state = np.inner(self.training_set[i], w)
-            if abs(self.activation(excited_state) - self.expected_output[i]) != 0:
-                print("Error for line %d" % i)
+            #if abs(self.activation(excited_state) - self.expected_output[i]) != 0:
+            #   print("Error for line %d" % i)
             error += abs(self.activation(excited_state) - self.expected_output[i])
         return error
     

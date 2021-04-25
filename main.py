@@ -51,6 +51,7 @@ perceptrons = {
 perceptron = config["perceptron_type"]
 max_iterations = config["max_iterations"]
 training_amount = config["training_amount"]
+cross_validation = config["cross_validation"]
 hidden_layers = config["multilayer_perceptron"]["hidden_layers"]
 epochs_amount = config["multilayer_perceptron"]["epochs_amount"]
 adaptive_eta = config["multilayer_perceptron"]["adaptive_eta"]["use"]
@@ -63,8 +64,7 @@ rows_per_entry = config["training_file_lines_per_entry"]
 
 read_training_txt = import_and_parse_data(training_file, rows_per_entry)
 read_output_txt = import_and_parse_data(output_file, 1)
-# print(read_training_txt)
-# print(read_output_txt)
+ 
 total_input = len(read_training_txt)
 limit = math.ceil(total_input * training_amount)
 
@@ -74,42 +74,27 @@ generalize_set = read_training_txt[limit:]
 learn_expected = read_output_txt[:limit]
 generalize_expected = read_output_txt[limit:]
 
-# amount = 0.1 
-# while amount < 1:
-#     limit = math.ceil(total_input * amount)
-    
-#     training_set = read_training_tsv[:limit]
-#     generalize_set = read_training_tsv[limit:]
-#     learn_expected = read_output_tsv[:limit]
-#     generalize_expected = read_output_tsv[limit:]
 
-# #    print("============== TRAINING %f  ===============" %amount)
-#     e = []
-#     for j in range(3):
-#         sp = perceptrons[perceptron](training_set, learn_expected, learning_rate)
-#         sp.train(max_iterations)
-#         out = sp.get_output(generalize_set)
-#         error = 0
-#         for real_output, expected_output in zip(out, generalize_expected):  
-#             #print(f"OUTPUT: {real_output}, EXPECTED: {expected_output}, ERROR: {abs(real_output - expected_output)}")
-         
-#             error += abs(real_output - expected_output)
-            
-#             # QUE TAN BIEN APRENDE  --> esto es con train y pasandole en get_output todo el train 
-#             # QUE TAN BIEN GENERALIZA --> esto es con cte*train y  1-cte * generalized
-#         e.append(error/len(out)) 
-#     print(sum(e)/len(e)) 
-#     amount += 0.05 
-
-if (perceptron == "multilayer_perceptron"): 
+if (perceptron == MULTILAYER): 
     adaptive_eta_params = [adaptive_eta, adaptive_eta_increase, adaptive_eta_decrease, adaptive_eta_max_iterations]
     sp = MultilayerPerceptron(training_set, learn_expected, learning_rate, hidden_layers, adaptive_eta_params,batch=batch,momentum=momentum)
     amount = epochs_amount
 else: 
     sp = perceptrons[perceptron](training_set, learn_expected, learning_rate)
     amount = max_iterations
- 
-Metrics().cross_validation(2, read_training_txt , read_output_txt, learning_rate, amount, MULTILAYER, hidden_layers)     
-#sp.train(amount)                                                            # Train perceptron with a part of the dataset 
-#out = sp.get_output(generalize_set if generalize_set else training_set)     # Get real output based on the weights obtained in the training 
-#print(out) 
+
+if(cross_validation):                                                           # Choose best training set/testing set partition
+    Metrics().cross_validation(2, read_training_txt , read_output_txt, learning_rate, amount, perceptron, hidden_layers)   
+else:   
+    sp.train(amount)                                                            # Train perceptron with a part of the dataset 
+    out = sp.get_output(generalize_set if generalize_set else training_set)     # Get real output based on the weights obtained in the training 
+    print("OUTPUT:")
+    print(out)
+    error = 0
+    for real_output, expected  in zip(out, read_output_txt):  
+        
+        if (perceptron == MULTILAYER):  
+            error += abs(real_output[0] - expected)
+        else: 
+            error += abs(real_output  - expected ) 
+    print(f"ABSOLUTE ERROR: {error/len(out)}")

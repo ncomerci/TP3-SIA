@@ -41,3 +41,124 @@ Para ejecutar el programa, correr el siguiente comando en consola:
 ```bash
 $> python3 main.py
 ```
+
+### POSIBLES CONFIGURACIONES 
+#### EJERCICIO 1 
+##### AND 
+{
+    "perceptron_type": "step_simple_perceptron",
+    "learning_rate": 0.01,
+    "max_iterations": 1000,
+    "training_amount": 1,
+    "multilayer_perceptron": {
+        "hidden_layers": [10,10],
+        "epochs_amount": 1000,
+        "batch": true,
+        "momentum": true,
+        "adaptive_eta": {
+            "use": false,
+            "increase_by": 0.01,
+            "decrease_by": 0.03,
+            "max_iterations": 4
+        }        
+    },
+    "cross_validation": false,
+    "training_file_path": "files/ej1_training_set.txt",
+    "training_file_lines_per_entry": 1,
+    "output_file_path": "files/and_expected_output.txt"
+}
+##### XOR 
+{
+    "perceptron_type": "step_simple_perceptron",
+    "learning_rate": 0.01,
+    "max_iterations": 1000,
+    "training_amount": 1,
+    "multilayer_perceptron": {
+        "hidden_layers": [10,10],
+        "epochs_amount": 1000,
+        "batch": true,
+        "momentum": true,
+        "adaptive_eta": {
+            "use": false,
+            "increase_by": 0.01,
+            "decrease_by": 0.03,
+            "max_iterations": 4
+        }        
+    },
+    "cross_validation": false,
+    "training_file_path": "files/ej1_training_set.txt",
+    "training_file_lines_per_entry": 1,
+    "output_file_path": "files/xor_expected_output.txt"
+}
+-------------
+#### EJERCICIO 2 
+{
+    "perceptron_type": "non_linear_simple_perceptron",
+    "learning_rate": 0.06,
+    "max_iterations": 1000,
+    "training_amount": 1,
+    "multilayer_perceptron": {
+        "hidden_layers": [10,10],
+        "epochs_amount": 10000,
+        "batch": false,
+        "momentum": false,
+        "adaptive_eta": {
+            "use": false,
+            "increase_by": 0.01,
+            "decrease_by": 0.03,
+            "max_iterations": 4
+        }        
+    },
+    "cross_validation": false,
+    "training_file_path": "files/ej2_training_set.txt",
+    "training_file_lines_per_entry": 1,
+    "output_file_path": "files/ej2_expected_output.txt"
+}
+-------------
+#### EJERCICIO 3 
+##### XOR 
+{
+    "perceptron_type": "multilayer_perceptron",
+    "learning_rate": 0.02,
+    "max_iterations": 1000,
+    "training_amount": 1,
+    "multilayer_perceptron": {
+        "hidden_layers": [10,15],
+        "epochs_amount": 1000,
+        "batch": true,
+        "momentum": false,
+        "adaptive_eta": {
+            "use": true,
+            "increase_by": 0.01,
+            "decrease_by": 0.03,
+            "max_iterations": 4
+        }        
+    },
+    "cross_validation": false,
+    "training_file_path": "files/ej1_training_set.txt",
+    "training_file_lines_per_entry": 1,
+    "output_file_path": "files/xor_expected_output.txt"
+}
+##### MAPA DE PIXELES
+{
+    "perceptron_type": "multilayer_perceptron",
+    "learning_rate": 0.01,
+    "max_iterations": 1000,
+    "training_amount": 1,
+    "multilayer_perceptron": {
+        "hidden_layers": [10,10],
+        "epochs_amount": 1000,
+        "batch": true,
+        "momentum": true,
+        "adaptive_eta": {
+            "use": false,
+            "increase_by": 0.01,
+            "decrease_by": 0.03,
+            "max_iterations": 4
+        }        
+    },
+    "cross_validation": false,
+    "training_file_path": "files/ej3_mapa_de_pixeles.txt",
+    "training_file_lines_per_entry": 7,
+    "output_file_path": "files/ej3_mapa_output.txt"
+}

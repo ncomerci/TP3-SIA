@@ -118,19 +118,16 @@ class MultilayerPerceptron:
 
                 aux_error = self.calculate_error(expected)
                 acum_error += aux_error                              # calculate error\
-
-                # print("error: " + str(error))
+ 
                 # Compare errors for adaptive eta
                 if self.adaptive_eta and last_error:
                     k = self.apply_adaptive_eta(aux_error, last_error,k)
                 last_error = aux_error
             error = 0.5 * acum_error/len(self.training_set)
-            # print(error)
-            # print(error)
+        
             if error < min_error:
-                min_error = error 
-            # print("min error: " + str(min_error) )    
-            # print("avg error: " + str(error))
+                min_error = error  
+                
             if(error < self.LIMIT):
                 print(f"FINAL EPOCH: {epoch} - FINAL ERROR: {error} - FINAL MIN ERROR: {min_error}")
                 break
@@ -223,8 +220,7 @@ class MultilayerPerceptron:
             expected = self.expected_output[i]
             exited = self.neurons[self.layers_amount-1][0].last_excited
             activation_state = self.activation_function(exited)
-            print(expected)
-            print(activation_state)
+        
             error += 0.5 * (1 + expected)*math.log((1+expected)/(1+activation_state),10) + 0.5 * (1-expected)*math.log((1-expected)/(1-activation_state),10)
         return error
 
@@ -252,7 +248,7 @@ class MultilayerPerceptron:
         aux_input = np.array(list(map(lambda t: [1]+t, input)))
         output = []
         for elem in aux_input:
-            print(elem)
+            
             self.apply_input_to_layer_zero(elem)
             self.propagate()
             output.append([neuron.last_activation for neuron in self.neurons[self.layers_amount-1]])
