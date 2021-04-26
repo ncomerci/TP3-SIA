@@ -77,14 +77,14 @@ $> python3 main.py
     "max_iterations": 1000,
     "training_amount": 1,
     "multilayer_perceptron": {
-        "hidden_layers": [10,10],
-        "epochs_amount": 1000,
-        "batch": true,
-        "momentum": true,
+        "hidden_layers": [10],
+        "epochs_amount": 100,
+        "batch": false,
+        "momentum": false,
         "adaptive_eta": {
             "use": false,
             "increase_by": 0.01,
-            "decrease_by": 0.03,
+            "decrease_by": 0.02,
             "max_iterations": 4
         }        
     },

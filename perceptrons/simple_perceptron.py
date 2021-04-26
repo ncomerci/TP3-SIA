@@ -7,7 +7,7 @@ class SimplePerceptron(Perceptron):
         super().__init__(training_set,expected_output,learning_rate)
     
     def activation(self, excited_state):
-        return np.sign(excited_state)
+        return 1.0 if excited_state >= 0.0 else -1.0   
 
     def error(self,w):
         # Para cada elemento del conjunto de entrada aplicandole su peso correspondiente, 
