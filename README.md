@@ -32,8 +32,7 @@ En el archivo `config.json` del directorio raíz se encuentran los distintos par
   - `epochs_amount`: cantidad de épocas
   - `batch`: booleano para utilizar o no la implementación batch. Por default se hace de forma incremental
   - `momentum`: booleano para la utilización de Momentum 
-  - `adaptive_eta`: booleano para la utilización de ETA adaptativo. El mismo incrementa eta por un valor de `increase_by` en caso de que el error haya disminuido durante `max_iterations` seguidas. En caso contrario lo decrementa por `decrease_by`*eta.
-- `cross_validation`: booleano en caso de querer evaluar métricas con el método de validación cruzada.  
+  - `adaptive_eta`: booleano para la utilización de ETA adaptativo. El mismo incrementa eta por un valor de `increase_by` en caso de que el error haya disminuido durante `max_iterations` seguidas. En caso contrario lo decrementa por `decrease_by`*eta. 
 - `training_file_path`: path del txt del set de entrenamiento (Ej: 'files/ej1_training_set.txt')
 - `training_file_lines_per_entry`: cantidad de líneas del txt del set de entrenamiento que se toman como una sola entrada (dejarlo siempre en 1 y para el ej3 de los píxeles ponerlo en 7)
 - `output_file_path`: path del txt de las salidas esperadas (Ej: 'files/xor_expected_output.txt')
